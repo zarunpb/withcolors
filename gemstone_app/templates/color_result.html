@@ -1,0 +1,9 @@
+<h2>Detected Color</h2>
+<div style="width:250px; height:250px; background-color: rgb({{ analysis.selected_color }});"></div>
+
+<h3>Top 3 Possible Colors</h3>
+<ul>
+    {% for color, percentage in analysis.color_percentage.items %}
+        <li>{{ color }} - {{ percentage }}%</li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Colors</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .color-box {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            border: 1px solid black;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .export-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+        background-color: #007BFF;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 5px;
+        }
+
+    .export-btn:hover {
+        background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body></body>
+{% extends "base.html" %}
+
+
+
+<body>
+    <h1>Search & Filter Colors</h1>
+    <a href="{% url 'export_colors_csv' %}" class="export-btn">📥 Export to CSV</a>
+
+    <!-- Search Form -->
+    <form method="GET" action="{% url 'search_colors' %}" class="search-bar">
+        <input type="text" name="q" placeholder="Search..." value="{{ query }}">
+        <select name="filter_by">
+            <option value="all" {% if filter_by == "all" %}selected{% endif %}>All Fields</option>
+            <option value="rgb" {% if filter_by == "rgb" %}selected{% endif %}>RGB</option>
+            <option value="css" {% if filter_by == "css" %}selected{% endif %}>CSS Code</option>
+            <option value="brightness" {% if filter_by == "brightness" %}selected{% endif %}>Brightness</option>
+            <option value="color_ratios" {% if filter_by == "color_ratios" %}selected{% endif %}>Color Ratios</option>
+            <option value="density" {% if filter_by == "density" %}selected{% endif %}>Density</option>
+            <option value="top_color" {% if filter_by == "top_color" %}selected{% endif %}>Top Gemstone Color</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Results Table -->
+    {% if colors %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Color</th>
+            <th>CSS Code</th>
+            <th>RGB</th>
+            <th>Brightness</th>
+            <th>Color Ratios</th>
+            <th>Density</th>
+            <th>Top 3 Closest Colors</th>
+            <th>Created At</th>
+        </tr>
+        {% for color in colors %}
+        <tr>
+            <td>{{ color.id }}</td>
+            <td><div class="color-box" style="background-color: {{ color.css_color_code }};"></div></td>
+            <td>{{ color.css_color_code }}</td>
+            <td>{{ color.rgb }}</td>
+            <td>{{ color.brightness }}</td>
+            <td>{{ color.color_ratios }}</td>
+            <td>{{ color.density }}</td>
+            <td>
+                {% for color_match in color.closest_colors %}
+                    {{ color_match.name }} ({{ color_match.percentage }}%)<br>
+                {% endfor %}
+            </td>
+            <td>{{ color.created_at }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No matching results found.</p>
+    {% endif %}
+</body>
+{% block content %}
+</html>
